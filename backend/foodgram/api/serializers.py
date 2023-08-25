@@ -1,5 +1,7 @@
 from collections import defaultdict
 
+from django.db import transaction
+
 from rest_framework import serializers
 
 from drf_extra_fields.fields import Base64ImageField
@@ -174,6 +176,7 @@ class RecipePostSerializer(serializers.ModelSerializer):
         fields = ['id', 'tags', 'ingredients', 'image',
                   'name', 'text', 'cooking_time', ]
 
+    @transaction.atomic
     def update(self, instance, validated_data):
 
         self.is_valid(raise_exception=True)
@@ -189,16 +192,20 @@ class RecipePostSerializer(serializers.ModelSerializer):
 
         instance.ingredientamount.all().delete()
 
-        for ingredient in ingredient_data:
-            instance.ingredientamount.add(
-                IngredientAmount.objects.create(ingredient=ingredient['id'],
-                                                recipe=instance,
-                                                amount=ingredient['amount'])
+        instance.ingredientamount.add(
+            IngredientAmount.objects.bulk_create(
+                [IngredientAmount(
+                    ingredient=ingredient['id'],
+                    recipe=instance,
+                    amount=ingredient['amount']
+                ) for ingredient in ingredient_data]
             )
+        )
 
         instance.save()
         return instance
 
+    @transaction.atomic
     def create(self, validated_data):
 
         self.is_valid(raise_exception=True)
@@ -216,11 +223,14 @@ class RecipePostSerializer(serializers.ModelSerializer):
         for ingredient in ingredient_data:
             formated_ingredients[ingredient['id']] += ingredient['amount']
 
-        for ingredient, ingredient_amount in formated_ingredients.items():
             recipe.ingredientamount.add(
-                IngredientAmount.objects.create(
-                    ingredient=ingredient, recipe=recipe,
-                    amount=ingredient_amount
+                IngredientAmount.objects.bulk_create(
+                    [IngredientAmount(
+                        ingredient=ingredient,
+                        recipe=recipe,
+                        amount=ingredient_amount
+                    ) for ingredient, ingredient_amount
+                      in formated_ingredients.items()]
                 )
             )
 

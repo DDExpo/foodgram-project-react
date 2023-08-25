@@ -98,7 +98,8 @@ class UsersViewset(mixins.CreateModelMixin,
                 user_follow.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
 
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'You cant subscribe to yourself'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         else:
             user_following = get_object_or_404(
@@ -147,7 +148,8 @@ class RecipsViewset(viewsets.ModelViewSet):
                 recipese_fav.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
 
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'You cant favourite your own recipes!'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         else:
             user_fav_rec = get_object_or_404(FavoriteRecipes,

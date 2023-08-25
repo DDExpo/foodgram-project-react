@@ -75,8 +75,8 @@ CORS_ALLOW_ALL_ORIGINS = True
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB', 'Foodgram_DB'),
-        'USER': os.getenv('POSTGRES_USER', 'Foodgram_user'),
+        'NAME': os.getenv('POSTGRES_DB', 'just_DB'),
+        'USER': os.getenv('POSTGRES_USER', 'just_user'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
         'HOST': os.getenv('DB_HOST', 'localhost'),
         'PORT': os.getenv('DB_PORT', 5432),
