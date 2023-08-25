@@ -1,5 +1,4 @@
 from django_filters import rest_framework
-
 from rest_framework.pagination import PageNumberPagination
 
 from recipes.models import Recipes

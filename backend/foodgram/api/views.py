@@ -1,38 +1,34 @@
-from typing import Dict
-from io import BytesIO
 from collections import defaultdict
+from io import BytesIO
+from typing import Dict
 
+from django.http import FileResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from django.http import FileResponse, JsonResponse
-
 from reportlab.lib.pagesizes import A4
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-
+from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
+from rest_framework import filters, mixins, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
-from rest_framework import filters, mixins, status, viewsets
 from rest_framework.response import Response
-from rest_framework.pagination import LimitOffsetPagination
 
-from foodgram.settings import FONT_DIRS
-from users.models import User, UsersFollowing
-from recipes.models import (
-    Ingredients, Recipes, Tags, FavoriteRecipes, ShoppingCart
-)
-from api.serializers import (
-    UserSerializer, UserPasswordSerializer, TagsSerializer,
-    IngredientsSerializer, RecipeGetSerializer, RecipePostSerializer,
-    UserFavouriteSerializer, RecipeFavoriteSerializer,
-)
-from api.permissions import (IsAuthor, IsYourShopCart,
-                             IsAuthorOrSafeMethodOrAdmin)
+from api.permissions import (IsAuthor, IsAuthorOrSafeMethodOrAdmin,
+                             IsYourShopCart)
+from api.serializers import (IngredientsSerializer, RecipeFavoriteSerializer,
+                             RecipeGetSerializer, RecipePostSerializer,
+                             TagsSerializer, UserFavouriteSerializer,
+                             UserPasswordSerializer, UserSerializer)
 from api.utils.custom_filter import (CustomFilterIsFavoritedIsShoppingCart,
                                      CustomRecipesPagination)
+from foodgram.settings import FONT_DIRS
+from recipes.models import (FavoriteRecipes, Ingredients, Recipes,
+                            ShoppingCart, Tags)
+from users.models import User, UsersFollowing
 
 
 class UsersViewset(mixins.CreateModelMixin,

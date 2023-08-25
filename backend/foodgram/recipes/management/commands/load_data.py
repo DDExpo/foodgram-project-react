@@ -1,12 +1,11 @@
 from csv import DictReader
-from typing import List, Dict, Type
+from typing import Dict, List, Type
 
-from django.db import models
 from django.core.management.base import BaseCommand
+from django.db import models
 
-from recipes.models import Ingredients, MODELS_FIELDS, Tags
 from foodgram.settings import DATA_DIR
-
+from recipes.models import MODELS_FIELDS, Ingredients, Tags
 
 MODELS_CSV: Dict[Type[models.Model], str] = {Ingredients: 'ingredients.csv',
                                              Tags: 'tags.csv'}

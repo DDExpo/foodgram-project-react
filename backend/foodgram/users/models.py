@@ -1,9 +1,7 @@
-from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
-
+from django.db import models
 from rest_framework.exceptions import ValidationError
-
 
 REGEX_VALIDATOR = RegexValidator(
     regex=r'^(?!foodgram$)(?!me$)(?!$)[\w.@+-]+\Z(?! +$)')

@@ -1,15 +1,12 @@
 from collections import defaultdict
 
 from django.db import transaction
-
+from djoser.serializers import UserCreateSerializer
+from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from drf_extra_fields.fields import Base64ImageField
-
-from djoser.serializers import UserCreateSerializer
+from recipes.models import IngredientAmount, Ingredients, Recipes, Tags
 from users.models import User, UsersFollowing
-from recipes.models import (Recipes, Tags, Ingredients,
-                            IngredientAmount)
 
 
 class UserRecipeSerializer(serializers.ModelSerializer):
@@ -229,8 +226,9 @@ class RecipePostSerializer(serializers.ModelSerializer):
                         ingredient=ingredient,
                         recipe=recipe,
                         amount=ingredient_amount
-                    ) for ingredient, ingredient_amount
-                      in formated_ingredients.items()]
+                    )
+                        for ingredient, ingredient_amount
+                        in formated_ingredients.items()]
                 )
             )
 

@@ -1,8 +1,8 @@
 from typing import List
 
+from django.core.validators import (MaxValueValidator, MinValueValidator,
+                                    RegexValidator)
 from django.db import models
-from django.core.validators import RegexValidator
-from django.core.validators import MaxValueValidator, MinValueValidator
 
 from users.models import User
 
@@ -89,7 +89,7 @@ class Recipes(models.Model):
     )
 
     cooking_time = models.IntegerField(
-        verbose_name='Время приготовления(в минутах)',  default=1,
+        verbose_name='Время приготовления(в минутах)', default=1,
         validators=[
             MinValueValidator(1, message='Value must be at least 1.'),
             MaxValueValidator(9999, message='Value must be at most 9999.')
