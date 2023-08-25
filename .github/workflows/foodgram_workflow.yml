@@ -9,7 +9,16 @@ jobs:
   tests:
     name: PEP8 check
     runs-on: ubuntu-latest
-
+    services:
+      postgres:
+        image: postgres:13.10
+        env:
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+        ports:
+          - ${{ secrets.DB_PORT }}:${{ secrets.DB_PORT }}
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5 
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python
@@ -71,15 +80,6 @@ jobs:
     needs:
       - tests
       - build_and_push_to_docker_hub
-    postgres:
-      image: postgres:13.10
-      env:
-        POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-        POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-        POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-      ports:
-        - ${{ secrets.DB_PORT }}:${{ secrets.DB_PORT }}
-      options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - name: Executing remote ssh commands to deploy
         uses: appleboy/ssh-action@master
