@@ -81,6 +81,17 @@ jobs:
       - tests
       - build_and_push_to_docker_hub
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Copy docker-compose.yml via ssh
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.SSH_KEY }}
+          passphrase: ${{ secrets.PASSPHRASE }}
+          source: 'docker-compose.production.yml'
+          target: 'foodgram'
       - name: Executing remote ssh commands to deploy
         uses: appleboy/ssh-action@master
         with:
@@ -89,11 +100,9 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |
-            sudo rm -f .env
+            cd foodgram
             sudo touch .env
             sudo chmod 666 .env
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_backend:latest
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend:latest
 
             sudo echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
             sudo echo ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} >> .env
@@ -103,9 +112,10 @@ jobs:
             sudo echo DB_HOST=${{ secrets.DB_HOST }} >> .env
             sudo echo DB_PORT=${{ secrets.DB_PORT }} >> .env
               
-            sudo docker-compose stop
-
-            sudo docker compose rm frontend
-            sudo docker compose pull frontend
-
-            sudo docker compose up -d --build
+            
+            sudo docker compose -f docker-compose.production.yml pull
+            sudo docker compose -f docker-compose.production.yml down
+            sudo docker compose -f docker-compose.production.yml up -d
+            sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate
+            sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic
+            sudo docker compose -f docker-compose.production.yml exec backend cp -r /app/staticfiles/. /static/backend_static/
