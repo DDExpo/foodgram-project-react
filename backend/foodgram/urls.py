@@ -7,7 +7,6 @@ from django.views.generic import TemplateView
 urlpatterns = [
     path('api/', include('api.urls')),
     path('admin/', admin.site.urls),
-    path("__debug__/", include("debug_toolbar.urls")),
     path(
         'redoc/',
         TemplateView.as_view(template_name='redoc.html'),
