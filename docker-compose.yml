@@ -33,7 +33,7 @@ services:
       - backend
 
   nginx:
-    image: nginx:1.19.3
+    build: ./nginx/
     env_file: .env
     depends_on:
       - backend
