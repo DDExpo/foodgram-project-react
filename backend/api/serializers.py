@@ -184,21 +184,24 @@ class RecipePostSerializer(serializers.ModelSerializer):
                                                    instance.cooking_time)
         ingredient_data = validated_data.get('ingredients')
         tags_data = validated_data.get('tags')
+        formated_ingredients = defaultdict(int)
 
         instance.tags.set(tags_data)
 
         instance.ingredientamount.all().delete()
 
-        instance.ingredientamount.add(
-            IngredientAmount.objects.bulk_create(
-                [IngredientAmount(
-                    ingredient=ingredient['id'],
-                    recipe=instance,
-                    amount=ingredient['amount']
-                ) for ingredient in ingredient_data]
-            )
-        )
+        for ingredient in ingredient_data:
+            formated_ingredients[ingredient['id']] += ingredient['amount']
 
+        IngredientAmount.objects.bulk_create(
+            [IngredientAmount(
+                ingredient=ingredient,
+                recipe=instance,
+                amount=ingredient_amount
+            )
+                for ingredient, ingredient_amount
+                in formated_ingredients.items()]
+        )
         instance.save()
         return instance
 
@@ -220,18 +223,15 @@ class RecipePostSerializer(serializers.ModelSerializer):
         for ingredient in ingredient_data:
             formated_ingredients[ingredient['id']] += ingredient['amount']
 
-            recipe.ingredientamount.add(
-                IngredientAmount.objects.bulk_create(
-                    [IngredientAmount(
-                        ingredient=ingredient,
-                        recipe=recipe,
-                        amount=ingredient_amount
-                    )
-                        for ingredient, ingredient_amount
-                        in formated_ingredients.items()]
-                )
+        IngredientAmount.objects.bulk_create(
+            [IngredientAmount(
+                ingredient=ingredient,
+                recipe=recipe,
+                amount=ingredient_amount
             )
-
+                for ingredient, ingredient_amount
+                in formated_ingredients.items()]
+        )
         return recipe
 
 
