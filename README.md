@@ -9,6 +9,12 @@ Foodgram - продуктовый помощник с базой кулинар�
 https://foodcore.ddns.net/
 ```
 
+## Админка
+```
+Почта - Admin или admin@gmail.com
+Пароль - 1234
+Потом удалю
+```
 ### Технологии:
 
 Python, Django, Django Rest Framework, Docker, Gunicorn, NGINX, PostgreSQL,
